@@ -1,0 +1,39 @@
+name: build
+
+on:
+  #push:
+  #  branches:
+  #    - master
+  #schedule:
+  #  - cron: '0 */4 * * *'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:base-devel
+    steps:
+      #- name: Checkout
+        #uses: actions/checkout@v2
+
+      - name: Build
+        run: |
+          useradd -m user
+          usermod -aG wheel user
+          echo "%wheel ALL=(ALL:ALL) NOPASSWD: ALL" >> /etc/sudoers
+          pacman -Syu git --noconfirm
+          chown user:user $(pwd)
+          sudo -u user git clone https://aur.archlinux.org/mozc-ut.git
+          cd mozc-ut
+          echo "ver=$(cat PKGBUILD | grep pkgver | cut -d "=" -f 2)" >> $GITHUB_ENV
+          sudo -u user makepkg -s --noconfirm
+
+      - name: Release
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          automatic_release_tag: ${{ env.ver }}
+          prerelease: false
+          files: |
+              ./mozc-ut/*.tar.zst
