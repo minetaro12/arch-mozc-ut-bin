@@ -24,9 +24,16 @@ jobs:
           echo "%wheel ALL=(ALL:ALL) NOPASSWD: ALL" >> /etc/sudoers
           pacman -Syu git --noconfirm
           chown user:user $(pwd)
+          
           sudo -u user git clone https://aur.archlinux.org/mozc-ut.git
           cd mozc-ut
           echo "ver=$(cat PKGBUILD | grep pkgver | cut -d "=" -f 2)" >> $GITHUB_ENV
+          sudo -u user makepkg -s --noconfirm
+          pacman -U mozc-ut-*.pkg.tar.zst --noconfirm
+          cd ..
+          
+          sudo -u user git clone https://aur.archlinux.org/fcitx5-mozc-ut.git
+          cd fcitx5-mozc-ut
           sudo -u user makepkg -s --noconfirm
 
       - name: Release
@@ -36,4 +43,5 @@ jobs:
           automatic_release_tag: ${{ env.ver }}
           prerelease: false
           files: |
-              ./mozc-ut/*.tar.zst
+              ./mozc-ut/mozc-ut-*.pkg.tar.zst
+              ./fcitx5-mozc-ut/fcitx5-mozc-ut-*.pkg.tar.zst
