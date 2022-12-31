@@ -30,12 +30,17 @@ jobs:
           echo "ver=$(cat PKGBUILD | grep pkgver | cut -d "=" -f 2)" >> $GITHUB_ENV
           sudo -u user makepkg -s --noconfirm
           pacman -U mozc-ut-*.pkg.tar.zst --noconfirm
+          mv mozc-ut-*.pkg.tar.zst ../
           cd ..
           
           sudo -u user git clone https://aur.archlinux.org/fcitx5-mozc-ut.git
           cd fcitx5-mozc-ut
           sudo -u user makepkg -s --noconfirm
-
+          mv fcitx5-mozc-ut-*.pkg.tar.zst ../
+          cd ..
+          
+          repo-add mozc-ut-bin.db.tar.gz *.pkg.tar.zst
+          
       - name: Release
         uses: marvinpinto/action-automatic-releases@latest
         with:
@@ -43,5 +48,7 @@ jobs:
           automatic_release_tag: ${{ env.ver }}
           prerelease: false
           files: |
-              ./mozc-ut/mozc-ut-*.pkg.tar.zst
-              ./fcitx5-mozc-ut/fcitx5-mozc-ut-*.pkg.tar.zst
+              ./mozc-ut-*.pkg.tar.zst
+              ./fcitx5-mozc-ut-*.pkg.tar.zst
+              ./mozc-ut-bin.db*
+              ./mozc-ut-bin.files*
