@@ -12,25 +12,30 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/minetaro12/archlinux:latest
+      image: archlinux:base-devel
     steps:
       #- name: Checkout
         #uses: actions/checkout@v2
 
       - name: Build
         run: |
-          sudo pacman -Syu --noconfirm
-          git clone https://aur.archlinux.org/mozc-ut.git
+          useradd -m user
+          usermod -aG wheel user
+          echo "%wheel ALL=(ALL:ALL) NOPASSWD: ALL" >> /etc/sudoers
+          pacman -Syu git --noconfirm
+          chown user:user $(pwd)
+          
+          sudo -u user git clone https://aur.archlinux.org/mozc-ut.git
           cd mozc-ut
           echo "ver=$(cat PKGBUILD | grep pkgver | cut -d "=" -f 2)" >> $GITHUB_ENV
-          makepkg -s --noconfirm
-          sudo pacman -U mozc-ut-*.pkg.tar.zst --noconfirm
+          sudo -u user makepkg -s --noconfirm
+          pacman -U mozc-ut-*.pkg.tar.zst --noconfirm
           mv mozc-ut-*.pkg.tar.zst ../
           cd ..
           
-          git clone https://aur.archlinux.org/fcitx5-mozc-ut.git
+          sudo -u user git clone https://aur.archlinux.org/fcitx5-mozc-ut.git
           cd fcitx5-mozc-ut
-          makepkg -s --noconfirm
+          sudo -u user makepkg -s --noconfirm
           mv fcitx5-mozc-ut-*.pkg.tar.zst ../
           cd ..
           
