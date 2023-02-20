@@ -19,6 +19,8 @@ jobs:
 
       - name: Build
         run: |
+          cd ~
+
           sudo pacman -Syu --noconfirm
           git clone https://aur.archlinux.org/mozc-ut.git
           cd mozc-ut
@@ -43,7 +45,7 @@ jobs:
           automatic_release_tag: ${{ env.ver }}
           prerelease: false
           files: |
-              ./mozc-ut-*.pkg.tar.zst
-              ./fcitx5-mozc-ut-*.pkg.tar.zst
-              ./mozc-ut-bin.db*
-              ./mozc-ut-bin.files*
+              /home/user/mozc-ut-*.pkg.tar.zst
+              /home/user/fcitx5-mozc-ut-*.pkg.tar.zst
+              /home/user/mozc-ut-bin.db*
+              /home/user/mozc-ut-bin.files*
