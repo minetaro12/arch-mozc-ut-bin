@@ -40,15 +40,15 @@ jobs:
           cd ..
           
           repo-add mozc-ut-bin.db.tar.gz *.pkg.tar.zst
-
-      - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@v2
+          
+      - name: Release
+        uses: marvinpinto/action-automatic-releases@latest
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ env.ver }}
-          overwrite: true
-          file_glob: true
-          file: |
-            ./*.pkg.tar.zst
-            ./mozc-ut-bin.db*
-            ./mozc-ut-bin.files*
+          automatic_release_tag: ${{ env.ver }}
+          prerelease: false
+          files: |
+              ./mozc-ut-*.pkg.tar.zst
+              ./fcitx5-mozc-ut-*.pkg.tar.zst
+              ./mozc-ut-bin.db*
+              ./mozc-ut-bin.files*
